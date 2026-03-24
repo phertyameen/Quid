@@ -13,12 +13,19 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  fullName String? @map("full_name")
-  address  String @unique @map("address")
+  id          String     @id @default(uuid()) @map("id") // UUID primary key 
+  address     String     @unique @map("address") // Stellar wallet address -> unique
+  email       String?    @unique @map("email") // Optional, but unique if it is provided
+  displayName String?    @map("display_name")
+  bio         String?    @map("bio") // Optional too
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
 
-  missions Mission[]
+  missions    Mission[] // one-to-many, since users can have many missions.
+  // submissions Submission[] // same as missions
+  // drafts      Draft[] // same as above two
+
+  @@map("users")
 }
 
 model Mission {
