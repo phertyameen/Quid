@@ -1,114 +1,113 @@
 generator client {
-  provider = "prisma-client-js"
+ provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+ provider = "postgresql"
 }
 
 enum UserRole {
-  EARNER
-  CREATOR
+ EARNER
+ CREATOR
 }
 
 enum MissionStatus {
-  OPEN
-  STARTED
-  PAUSED
-  COMPLETED
-  CANCELLED
+ OPEN
+ STARTED
+ PAUSED
+ COMPLETED
+ CANCELLED
 }
 
 enum SubmissionStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  PAID
+ PENDING
+ APPROVED
+ REJECTED
+ PAID
 }
 
 model User {
-  id          String   @id @default(uuid()) @map("id")
-  address     String   @unique @map("address")
-  email       String?  @unique @map("email")
-  displayName String?  @map("display_name")
-  bio         String?  @map("bio")
-  role        UserRole @default(EARNER)
+ id String @id @default(uuid()) @map("id")
+ address String @unique @map("address")
+ email String? @unique @map("email")
+ displayName String? @map("display_name")
+ bio String? @map("bio")
+ role UserRole @default(EARNER)
 
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+ createdAt DateTime @default(now()) @map("created_at")
+ updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relationships
-  missions       Mission[]
-  submissions    Submission[]
-  missionDrafts  MissionDraft[]
+ // Relationships
+ missions Mission[]
+ submissions Submission[]
+ missionDrafts MissionDraft[]
 
-  @@map("users")
+ @@map("users")
 }
 
 model Mission {
-  id                String   @id @default(uuid()) @map("id")
-  ownerAddress      String   @map("owner_address")
-  title             String   @map("title")
-  descriptionCid    String   @map("description_cid")
-  metadataCid       String   @map("metadata_cid")
-  metadata          Json     @map("metadata")
-  rewardToken       String   @map("reward_token")
-  rewardAmount      String   @map("reward_amount")
-  maxParticipants   Int      @default(0) @map("max_participants")
-  participantsCount Int      @default(0) @map("participants_count")
-  status            String   @map("status")
-  aiSummary         String   @map("ai_summary")
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+ id String @id @default(uuid()) @map("id")
+ ownerAddress String @map("owner_address")
+ title String @map("title")
+ descriptionCid String @map("description_cid")
+ metadataCid String @map("metadata_cid")
+ metadata Json @map("metadata")
+ rewardToken String @map("reward_token")
+ rewardAmount String @map("reward_amount")
+ maxParticipants Int @default(0) @map("max_participants")
+ participantsCount Int @default(0) @map("participants_count")
+ status String @map("status")
+ aiSummary String @map("ai_summary")
+ createdAt DateTime @default(now()) @map("created_at")
+ updatedAt DateTime @updatedAt @map("updated_at")
 
-  owner       User         @relation(fields: [ownerAddress], references: [address])
-  submissions Submission[]
+ owner User @relation(fields: [ownerAddress], references: [address])
+ submissions Submission[]
 
-  @@index([ownerAddress])
-  @@index([status, createdAt(sort: Desc)])
-  @@map("missions")
+ @@index([ownerAddress])
+ @@index([status, createdAt(sort: Desc)])
+ @@map("missions")
 }
 
 model MissionDraft {
-  id           String   @id @default(uuid()) @map("id")
-  ownerAddress String   @map("owner_address")
-  title        String   @map("title")
-  data         Json     @map("data")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+ id String @id @default(uuid()) @map("id")
+ ownerAddress String @map("owner_address")
+ title String @map("title")
+ data Json @map("data")
+ createdAt DateTime @default(now()) @map("created_at")
+ updatedAt DateTime @updatedAt @map("updated_at")
 
-  owner User @relation(fields: [ownerAddress], references: [address])
+ owner User @relation(fields: [ownerAddress], references: [address])
 
-  @@index([ownerAddress, updatedAt])
-  @@map("mission_drafts")
+ @@index([ownerAddress, updatedAt])
+ @@map("mission_drafts")
 }
 
 model Submission {
-  id            String           @id @default(uuid()) @map("id")
-  missionId     String           @map("mission_id")
-  hunterAddress String           @map("hunter_address")
-  ipfsCid       String           @map("ipfs_cid")
-  textPayload   String?          @map("text_payload")
-  sentiment     Float?           @map("sentiment")
-  status        SubmissionStatus @default(PENDING) @map("status")
-  createdAt     DateTime         @default(now()) @map("created_at")
-  updatedAt     DateTime         @updatedAt @map("updated_at")
+ id String @id @default(uuid()) @map("id")
+ missionId String @map("mission_id")
+ hunterAddress String @map("hunter_address")
+ ipfsCid String @map("ipfs_cid")
+ textPayload String? @map("text_payload")
+ sentiment Float? @map("sentiment")
+ status SubmissionStatus @default(PENDING) @map("status")
+ createdAt DateTime @default(now()) @map("created_at")
+ updatedAt DateTime @updatedAt @map("updated_at")
 
-  mission Mission @relation(fields: [missionId], references: [id])
-  hunter  User    @relation(fields: [hunterAddress], references: [address])
+ mission Mission @relation(fields: [missionId], references: [id])
+ hunter User @relation(fields: [hunterAddress], references: [address])
 
-  @@unique([missionId, hunterAddress])
-  @@index([hunterAddress])
-  @@index([missionId])
-  @@map("submissions")
+ @@unique([missionId, hunterAddress])
+ @@index([hunterAddress])
+ @@index([missionId])
+ @@map("submissions")
 }
 
 model IndexerState {
-  id         Int      @id @default(1) @map("id")
-  lastLedger BigInt   @map("last_ledger")
-  lastCursor String?  @map("last_cursor")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+ id Int @id @default(1) @map("id")
+ lastLedger BigInt @map("last_ledger")
+ lastCursor String? @map("last_cursor")
+ updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("indexer_state")
+ @@map("indexer_state")
 }
