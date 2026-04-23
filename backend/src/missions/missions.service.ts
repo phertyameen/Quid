@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { MissionStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -54,6 +58,14 @@ export class MissionsService {
     return missions;
   }
 
+  async getMyMissions(ownerAddress: string): Promise<unknown> {
+    return this.prisma.mission.findMany({
+      where: { ownerAddress },
+      orderBy: { createdAt: 'desc' },
+      include: missionListInclude,
+    });
+  }
+
   async getMission(id: string): Promise<unknown> {
     const mission = await this.prisma.mission.findUnique({
       where: { id },
@@ -67,11 +79,38 @@ export class MissionsService {
     return mission;
   }
 
-  async getMyMissions(ownerAddress: string): Promise<unknown> {
-    return this.prisma.mission.findMany({
-      where: { ownerAddress },
-      orderBy: { createdAt: 'desc' },
-      include: missionListInclude,
+  async getMissionSubmissions(
+    missionId: string,
+    ownerAddress: string,
+  ): Promise<unknown> {
+    const mission = await this.prisma.mission.findUnique({
+      where: { id: missionId },
+      select: { id: true, ownerAddress: true },
     });
+
+    if (!mission) {
+      throw new NotFoundException(`Mission ${missionId} not found`);
+    }
+
+    if (mission.ownerAddress !== ownerAddress) {
+      throw new ForbiddenException(
+        'You are not authorized to view submissions for this mission',
+      );
+    }
+
+    const submissions = await this.prisma.submission.findMany({
+      where: { missionId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        hunter: {
+          select: {
+            address: true,
+            displayName: true,
+          },
+        },
+      },
+    });
+
+    return submissions;
   }
 }

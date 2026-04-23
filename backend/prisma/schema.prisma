@@ -56,7 +56,7 @@ model Mission {
  rewardAmount String @map("reward_amount")
  maxParticipants Int @default(0) @map("max_participants")
  participantsCount Int @default(0) @map("participants_count")
- status String @map("status")
+ status MissionStatus @default(OPEN) @map("status")
  aiSummary String @map("ai_summary")
  createdAt DateTime @default(now()) @map("created_at")
  updatedAt DateTime @updatedAt @map("updated_at")
