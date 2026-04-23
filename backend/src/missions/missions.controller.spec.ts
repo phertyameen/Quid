@@ -1,3 +1,4 @@
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { MissionsController } from './missions.controller';
 import { MissionsService } from './missions.service';
 import {
@@ -48,5 +49,29 @@ describe('MissionsController', () => {
       'mission-1',
       '0xabc',
     );
+  });
+
+  it('propagates ForbiddenException when user is not the mission owner', async () => {
+    missionsService.getMissionSubmissions.mockRejectedValue(
+      new ForbiddenException(),
+    );
+
+    await expect(
+      controller.submissions('mission-1', {
+        user: { userId: 'user-1', address: '0xother' },
+      } as any),
+    ).rejects.toThrow(ForbiddenException);
+  });
+
+  it('propagates NotFoundException when mission does not exist', async () => {
+    missionsService.getMissionSubmissions.mockRejectedValue(
+      new NotFoundException(),
+    );
+
+    await expect(
+      controller.submissions('nonexistent', {
+        user: { userId: 'user-1', address: '0xabc' },
+      } as any),
+    ).rejects.toThrow(NotFoundException);
   });
 });
