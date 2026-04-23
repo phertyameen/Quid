@@ -66,4 +66,16 @@ export class MissionsService {
 
     return mission;
   }
+
+  async getMyMissions(id: string): Promise<unknown> {
+    return
+  }
+
+  async saveDraft(id: string, body: string): Promise<{}> {
+   return {id, body}
+  }
+
+  async getMissionSubmissions(id: string, req: {}): Promise<unknown> {
+   return
+  }
 }

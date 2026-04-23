@@ -22,7 +22,7 @@ export class MissionsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('draft')
-  saveDraft(@Req() req: AuthRequest, @Body() body: unknown): Promise<unknown> {
+  saveDraft(@Req() req: AuthRequest, @Body() body: string): Promise<{}> {
     return this.missionsService.saveDraft(req.user.address, body);
   }
 
