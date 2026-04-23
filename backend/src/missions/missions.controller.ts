@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { MissionsService } from './missions.service';
 import { ListMissionsQueryDto } from './dto/list-missions-query.dto';
 
@@ -9,5 +9,10 @@ export class MissionsController {
   @Get()
   list(@Query() query: ListMissionsQueryDto): Promise<unknown> {
     return this.missionsService.listPublicMissions(query);
+  }
+
+  @Get(':id')
+  detail(@Param('id') id: string): Promise<unknown> {
+    return this.missionsService.getMission(id);
   }
 }
