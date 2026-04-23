@@ -15,13 +15,6 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 type AuthRequest = Request & { user: { address: string } };
 
-interface AuthenticatedRequest extends Request {
-  user: {
-    userId: string;
-    address: string;
-  };
-}
-
 @Controller('missions')
 export class MissionsController {
   constructor(private readonly missionsService: MissionsService) {}
