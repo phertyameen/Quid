@@ -20,6 +20,12 @@ export class MissionsController {
     return this.missionsService.listPublicMissions(query);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  me(@Req() req: Request & { user: { address: string } }): Promise<unknown> {
+    return this.missionsService.getMyMissions(req.user.address);
+  }
+
   @Get(':id')
   detail(@Param('id') id: string): Promise<unknown> {
     return this.missionsService.getMission(id);

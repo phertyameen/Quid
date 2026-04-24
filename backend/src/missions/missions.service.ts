@@ -58,6 +58,14 @@ export class MissionsService {
     return missions;
   }
 
+  async getMyMissions(ownerAddress: string): Promise<unknown> {
+    return this.prisma.mission.findMany({
+      where: { ownerAddress },
+      orderBy: { createdAt: 'desc' },
+      include: missionListInclude,
+    });
+  }
+
   async getMission(id: string): Promise<unknown> {
     const mission = await this.prisma.mission.findUnique({
       where: { id },
