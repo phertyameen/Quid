@@ -1,9 +1,7 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
-  Post,
   Query,
   Req,
   UseGuards,
@@ -12,8 +10,6 @@ import { Request } from 'express';
 import { MissionsService } from './missions.service';
 import { ListMissionsQueryDto } from './dto/list-missions-query.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-
-type AuthRequest = Request & { user: { address: string } };
 
 @Controller('missions')
 export class MissionsController {
